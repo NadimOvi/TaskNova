@@ -9,7 +9,6 @@ interface ConversationDao {
     @Query("SELECT * FROM conversations WHERE userId = :userId ORDER BY createdAt ASC")
     fun getConversations(userId: String): Flow<List<ConversationEntity>>
 
-    // Get last 10 messages for AI context
     @Query("SELECT * FROM conversations WHERE userId = :userId ORDER BY createdAt DESC LIMIT 10")
     suspend fun getRecentMessages(userId: String): List<ConversationEntity>
 

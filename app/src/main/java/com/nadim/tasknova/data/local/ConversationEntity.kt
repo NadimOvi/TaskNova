@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 data class ConversationEntity(
     @PrimaryKey val id: String,
     val userId: String,
-    val role: String,                  // user / assistant
+    val role: String,      // user / assistant
     val content: String,
     val createdAt: Long = System.currentTimeMillis()
 )
