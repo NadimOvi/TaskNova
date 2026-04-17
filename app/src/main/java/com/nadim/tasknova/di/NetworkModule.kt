@@ -76,4 +76,8 @@ object NetworkModule {
     fun provideGmailApi(
         @Named("gmail") retrofit: Retrofit
     ): GmailApi = retrofit.create(GmailApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideGson(): com.google.gson.Gson = com.google.gson.Gson()
 }
