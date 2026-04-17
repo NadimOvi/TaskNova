@@ -33,6 +33,46 @@ class AuthViewModel @Inject constructor(
     val isLoggedIn: Boolean
         get() = authRepository.isLoggedIn
 
+    fun signInWithEmail(email: String, password: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = authRepository.signInWithEmail(email, password)
+            result.fold(
+                onSuccess = { profile ->
+                    userPreferences.setUserId(profile.id)
+                    userPreferences.setUserName(profile.fullName ?: "")
+                    userPreferences.setAvatarUrl(profile.avatarUrl ?: "")
+                    userPreferences.setOnboarded(true)
+                    _authState.value = AuthState.Success(profile)
+                },
+                onFailure = {
+                    _authState.value = AuthState.Error(
+                        it.message ?: "Sign in failed"
+                    )
+                }
+            )
+        }
+    }
+
+    fun signUpWithEmail(email: String, password: String) {
+        viewModelScope.launch {
+            _authState.value = AuthState.Loading
+            val result = authRepository.signUpWithEmail(email, password)
+            result.fold(
+                onSuccess = { profile ->
+                    userPreferences.setUserId(profile.id)
+                    userPreferences.setOnboarded(true)
+                    _authState.value = AuthState.Success(profile)
+                },
+                onFailure = {
+                    _authState.value = AuthState.Error(
+                        it.message ?: "Sign up failed"
+                    )
+                }
+            )
+        }
+    }
+
     fun signInWithGoogle(idToken: String) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
@@ -46,7 +86,9 @@ class AuthViewModel @Inject constructor(
                     _authState.value = AuthState.Success(profile)
                 },
                 onFailure = {
-                    _authState.value = AuthState.Error(it.message ?: "Sign in failed")
+                    _authState.value = AuthState.Error(
+                        it.message ?: "Google sign in failed"
+                    )
                 }
             )
         }
@@ -59,7 +101,9 @@ class AuthViewModel @Inject constructor(
             result.fold(
                 onSuccess = { _authState.value = AuthState.OtpSent },
                 onFailure = {
-                    _authState.value = AuthState.Error(it.message ?: "Failed to send OTP")
+                    _authState.value = AuthState.Error(
+                        it.message ?: "Failed to send OTP"
+                    )
                 }
             )
         }
@@ -76,7 +120,9 @@ class AuthViewModel @Inject constructor(
                     _authState.value = AuthState.Success(profile)
                 },
                 onFailure = {
-                    _authState.value = AuthState.Error(it.message ?: "OTP verification failed")
+                    _authState.value = AuthState.Error(
+                        it.message ?: "OTP verification failed"
+                    )
                 }
             )
         }

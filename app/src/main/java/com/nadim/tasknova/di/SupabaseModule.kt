@@ -9,6 +9,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.createSupabaseClient
 import io.github.jan.supabase.functions.Functions
 import io.github.jan.supabase.gotrue.Auth
+import io.github.jan.supabase.gotrue.AuthConfig
 import io.github.jan.supabase.postgrest.Postgrest
 import io.github.jan.supabase.realtime.Realtime
 import io.github.jan.supabase.storage.Storage
@@ -25,7 +26,11 @@ object SupabaseModule {
             supabaseUrl = BuildConfig.SUPABASE_URL,
             supabaseKey = BuildConfig.SUPABASE_ANON_KEY
         ) {
-            install(Auth)
+            install(Auth) {
+                // Save session so user stays logged in
+                autoLoadFromStorage = true
+                autoSaveToStorage   = true
+            }
             install(Postgrest)
             install(Realtime)
             install(Storage)

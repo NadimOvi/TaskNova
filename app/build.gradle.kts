@@ -19,11 +19,12 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        // Reads keys from local.properties
-        buildConfigField("String", "SUPABASE_URL", "\"${project.findProperty("SUPABASE_URL") ?: ""}\"")
-        buildConfigField("String", "SUPABASE_ANON_KEY", "\"${project.findProperty("SUPABASE_ANON_KEY") ?: ""}\"")
-        buildConfigField("String", "OPENAI_API_KEY", "\"${project.findProperty("OPENAI_API_KEY") ?: ""}\"")
+        buildConfigField("String", "SUPABASE_URL",
+            "\"https://rlfvdijxdfszzohekupt.supabase.co\"")
+        buildConfigField("String", "SUPABASE_ANON_KEY",
+            "\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJsZnZkaWp4ZGZzenpvaGVrdXB0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ4MzI3NzAsImV4cCI6MjA5MDQwODc3MH0.N51PhVk_HW4pYuYrOuViETOoBE4HW3zl0kQOC4ZKFEw\"")
+        buildConfigField("String", "OPENAI_API_KEY",
+            "\"your-new-openai-key-here\"")
     }
 
     buildTypes {
@@ -88,21 +89,20 @@ dependencies {
     implementation("androidx.room:room-ktx:2.6.1")
     kapt("androidx.room:room-compiler:2.6.1")
 
-    implementation("io.github.jan-tennert.supabase:supabase-kt:2.5.0")
+    // Supabase - BOM ensures all modules use same version
+    implementation(platform("io.github.jan-tennert.supabase:bom:2.5.0"))
+    implementation("io.github.jan-tennert.supabase:gotrue-kt")
+    implementation("io.github.jan-tennert.supabase:postgrest-kt")
+    implementation("io.github.jan-tennert.supabase:storage-kt")
+    implementation("io.github.jan-tennert.supabase:realtime-kt")
+    implementation("io.github.jan-tennert.supabase:functions-kt")
 
-// Supabase
-    implementation("io.github.jan-tennert.supabase:gotrue-kt:2.1.3")
-    implementation("io.github.jan-tennert.supabase:postgrest-kt:2.1.3")
-    implementation("io.github.jan-tennert.supabase:storage-kt:2.1.3")
-    implementation("io.github.jan-tennert.supabase:realtime-kt:2.1.3")
-    implementation("io.github.jan-tennert.supabase:functions-kt:2.1.3")
-
-// Ktor (required by Supabase)
+    // Ktor (required by Supabase)
     implementation("io.ktor:ktor-client-android:2.3.7")
     implementation("io.ktor:ktor-client-core:2.3.7")
     implementation("io.ktor:ktor-client-logging:2.3.7")
 
-    // Retrofit + OkHttp (OpenAI / Whisper / Gmail)
+    // Retrofit + OkHttp
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
     implementation("com.squareup.retrofit2:converter-gson:2.11.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
@@ -111,7 +111,7 @@ dependencies {
     // OpenAI client
     implementation("com.aallam.openai:openai-client:3.6.3")
 
-    // WorkManager + Hilt integration
+    // WorkManager + Hilt
     implementation("androidx.work:work-runtime-ktx:2.10.0")
     implementation("androidx.hilt:hilt-work:1.1.0")
     kapt("androidx.hilt:hilt-compiler:1.1.0")
@@ -125,10 +125,10 @@ dependencies {
     // Gson
     implementation("com.google.code.gson:gson:2.11.0")
 
-    // Lottie (animations)
+    // Lottie
     implementation("com.airbnb.android:lottie-compose:6.3.0")
 
-    // Coil (image loading for avatar)
+    // Coil
     implementation("io.coil-kt:coil-compose:2.5.0")
 
     // Splash screen
@@ -137,7 +137,7 @@ dependencies {
     // Google Auth
     implementation("com.google.android.gms:play-services-auth:21.0.0")
 
-    // Sentry (crash tracking)
+    // Sentry
     implementation("io.sentry:sentry-android:7.3.0")
 
     // Testing
@@ -150,7 +150,6 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 }
 
-// Allow references to generated code
 kapt {
     correctErrorTypes = true
 }

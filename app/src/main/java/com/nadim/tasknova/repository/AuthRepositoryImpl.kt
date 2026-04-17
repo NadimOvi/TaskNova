@@ -4,6 +4,7 @@ import com.nadim.tasknova.data.model.UserProfile
 import io.github.jan.supabase.gotrue.Auth
 import io.github.jan.supabase.gotrue.OtpType
 import io.github.jan.supabase.gotrue.providers.Google
+import io.github.jan.supabase.gotrue.providers.builtin.Email
 import io.github.jan.supabase.gotrue.providers.builtin.IDToken
 import io.github.jan.supabase.gotrue.providers.builtin.Phone
 import io.github.jan.supabase.postgrest.Postgrest
@@ -22,10 +23,54 @@ class AuthRepositoryImpl @Inject constructor(
     override val isLoggedIn: Boolean
         get() = auth.currentUserOrNull() != null
 
+    override suspend fun signInWithEmail(
+        email: String,
+        password: String
+    ): Result<UserProfile> {
+        return try {
+            auth.signInWith(Email) {
+                this.email    = email
+                this.password = password
+            }
+            val user = auth.currentUserOrNull()
+            Result.success(
+                UserProfile(
+                    id       = user?.id ?: "",
+                    fullName = user?.userMetadata
+                        ?.get("full_name")?.toString()?.trim('"')
+                )
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signUpWithEmail(
+        email: String,
+        password: String
+    ): Result<UserProfile> {
+        return try {
+            auth.signUpWith(Email) {
+                this.email    = email
+                this.password = password
+            }
+            val user = auth.currentUserOrNull()
+            Result.success(
+                UserProfile(
+                    id       = user?.id ?: "",
+                    fullName = user?.userMetadata
+                        ?.get("full_name")?.toString()?.trim('"')
+                )
+            )
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override suspend fun signInWithGoogle(idToken: String): Result<UserProfile> {
         return try {
             auth.signInWith(IDToken) {
-                this.idToken = idToken
+                this.idToken  = idToken
                 this.provider = Google
             }
             val user = auth.currentUserOrNull()
@@ -57,7 +102,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun verifyOtp(phone: String, otp: String): Result<UserProfile> {
         return try {
             auth.verifyPhoneOtp(
-                type = OtpType.Phone.SMS,
+                type  = OtpType.Phone.SMS,
                 phone = phone,
                 token = otp
             )
